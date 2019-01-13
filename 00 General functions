@@ -1,4 +1,5 @@
 ### general functions, 20180105
+### These functions are sourced at the beginning of other scripts for the aml2019 project.
 
 message("cutf()")
 cutf <- function(x, f=1, d="/") sapply(strsplit(x, d), function(i) paste(i[f], collapse=d))
