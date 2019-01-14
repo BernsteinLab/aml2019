@@ -26,7 +26,8 @@
 # CB that was different in only one position (hamming distance 1).
 # 
 # This script is run for every sample in each run. A single sample can have multiple library barcodes
-# in the sample sheet.
+# in the sample sheet. It generates two text files containing either all or the filtered list of cell
+# barcodes.
 
 
 options(max.print = 500)
