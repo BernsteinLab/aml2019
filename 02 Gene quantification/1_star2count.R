@@ -25,7 +25,7 @@
 # for each sample were deposited in GEO. For downstream analyses, we normalized gene counts to a total
 # of 10,000 for each cell.
 # 
-# This script is run for every sample separately. It generates two text files containing a summary and
+# This script is run for every sample separately. It generates two files containing a summary and
 # the digital expression matrix (UMI counts per gene and cell).
 
 
