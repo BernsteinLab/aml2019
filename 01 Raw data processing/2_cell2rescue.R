@@ -8,7 +8,7 @@
 # one of the libraries that were sequenced together in the respective run.
 # 
 # This script is run once for all sample per run. It generates lists of CBs for every sample
-# annotated by whether reads for this CB should be rescued.
+# annotated by whether reads for this CB should be rescued (from the Undetermined files).
 
 
 options(max.print = 1000)
