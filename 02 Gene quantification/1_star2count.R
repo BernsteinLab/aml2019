@@ -24,6 +24,9 @@
 # ribosomal RNAs, as these likely reflected poor quality cells. Resulting digital expression matrices
 # for each sample were deposited in GEO. For downstream analyses, we normalized gene counts to a total
 # of 10,000 for each cell.
+# 
+# This script is run for every sample separately. It generates two text files containing a summary and
+# the digital expression matrix (UMI counts per gene and cell).
 
 
 options(max.print = 500)
@@ -42,6 +45,20 @@ cutf <- function(x, f=1, d="/", ...) sapply(strsplit(x, d), function(i) i[f], ..
 
 ### gene annotations
 message("\n### ", Sys.time(), " - loading gene annotations")
+
+# example of gene annotations:
+# A1BG	NM_130786.3
+# A1BG-AS1	NR_015380.2
+# A1CF	NM_014576.3
+# A1CF	NM_138932.2
+# A1CF	NM_138933.2
+# A1CF	NM_001198818.1
+# A1CF	NM_001198819.1
+# A1CF	NM_001198820.1
+# A2M	NM_000014.5
+# A2M	NM_001347423.1
+# ...
+                                            
 a <- read.table("hg38.refMrna.gene.chrM.ercc.fa.names", sep = "\t", fill = NA)
 a$V2 <- cutf(a$V2, 1, "\\.")
 
@@ -68,17 +85,16 @@ message(paste0(length(unique(a$V1[!is.na(a$V1)])), " genes"))
 ### read data
 message("\n### ", Sys.time(), " - reading alignments to transcriptome")
 
-b <- commandArgs(trailingOnly=TRUE)[1]
-#b <- "3_fastq/170728.BM10.star/alignment_3562files_Aligned.toTranscriptome.out.bam"
+b <- commandArgs(trailingOnly=TRUE)[1]  # input toTranscriptome bam file
 # file.exists(b)
 
 # read stats
-d.stats <- read.table(paste(c(head(strsplit(b, "/")[[1]], -1), "readcount.txt"), collapse="/"))  # all reads
+d.stats <- read.table(paste(c(head(strsplit(b, "/")[[1]], -1), "readcount.txt"), collapse="/"))  # number of reads for each cell barcode
 rownames(d.stats) <- cutf(d.stats$V1, nchar(d.stats[1, 1])-nchar(gsub("/", "", d.stats[1, 1]))+1)
 d.stats$V1 <- NULL
 colnames(d.stats) <- "reads"
 
-foo <- read.table(sub("toTranscriptome.out.bam", "sortedByCoord.out.bam.aligned", b))  # aligned to genome
+foo <- read.table(sub("toTranscriptome.out.bam", "sortedByCoord.out.bam.aligned", b))  # number of reads aligned to genome for each cell barcode
 d.stats$genome <- NA
 d.stats[foo$V1, "genome"] <- foo$V2
 rm(foo)
