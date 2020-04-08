@@ -56,9 +56,6 @@ options(scipen = 999)
 
 library(randomForest)
 
-# setwd("~/DropboxPartners/Single-cell AML/Analysis/AnalysisVolker")
-source("~/DropboxPartners/Single-cell AML/Analysis/AnalysisVolker/functions_general.vh20180105.R")
-
 
 ### 1) Prepare
 # load expression data
@@ -67,7 +64,7 @@ X <- log(E+1)  # filtered gene set
 dim(X)
 
 # load BackSPIN cell type annotation
-a <- read.table("BM_6915cells.BackSPIN.txt", row.names=1)  # cell annotations available on GEO
+a <- read.table("BM_6915cells.BackSPIN.txt", row.names=1, header=TRUE)  # cell annotations available on GEO
 # head(a)
 #                   cluster
 # BM4_AAAAAACATACG earlyEry
@@ -179,7 +176,7 @@ save(list=c("rf.all.outer", "rf.all.inner", "rf.all.cv"), file="RF1.RData")
 ### 3) Classify cells from tumor samples with detected mutations
 # load tumor data (cell mutation status available on GEO)
 load("AMLmut_923cells.RData", verbose = TRUE)    # as generated using the prepareBackSpinKNN script
-Y <- E
+Y <- log(E+1)
 
 ## classify
 pdf("RF1.AMLclassify.pdf", width = 6, height = 6)
@@ -261,7 +258,7 @@ names(y) <- unlist(a2)
 x <- unlist(a2)
 cv <- split(x, rep(1:5, 1E6)[1:length(y)])
 
-rf.tumor.cv <- mclapply(mc.preschedule = FALSE, mc.cores = 3, cv, function(y2) {
+rf.tumor.cv <- lapply(cv, function(y2) {
   set.seed(123)
   randomForest(x = t(XY[rf.tumor.outer.used1k, setdiff(x, y2)]),
                y = y[setdiff(x, y2)],
@@ -293,7 +290,7 @@ heatmap(z, Rowv=NA, Colv=NA, scale="n", zlim=c(0, 1), col=cols, main="BM+mut, in
 dev.off()
 
 
-## export RData object for RF1
+## export RData object for RF2
 save(list=c("rf.tumor.outer", "rf.tumor.inner", "rf.tumor.cv"), file="RF2.RData")
 
 
